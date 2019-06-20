@@ -1,6 +1,5 @@
-var express = require('express');
-var app = express();
-
+const express = require('express');
+const app = express();
 
 let users = [{
     id: 1,
@@ -24,6 +23,12 @@ let users = [{
   }
 ]
 
+app.set('view engine', 'ejs');
+
+app.get('/', function(req, res) {
+    res.render('dashboard.ejs', { users: users });
+});
+
 app.get('/get_user', function(req, res) {
   try {
     if (!req.query.id) {
@@ -34,7 +39,6 @@ app.get('/get_user', function(req, res) {
     res.statusCode = 404;
     res.end("Resourse not found!");
   }
-
 });
 
 app.get('/get_all', function(req, res) {

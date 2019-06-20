@@ -1,0 +1,43 @@
+<html>
+<head>
+    <title>Список</title>
+</head>
+<body>
+<h1>Пользователи</h1>
+<ul>
+    <% users.forEach(function(user) { %>
+    <li>
+        <%= user.name %> - <%= user.age %> лет
+        <button name='edit' id='<%= user.id %>'>Редактировать</button>
+        <button name='delete' id='<%= user.id %>'>Удалить</button>
+    </li>
+    <% }); %>
+</ul>
+<button id='add'>Добавить</button>
+</body>
+<script>
+    // Handle edit
+    const editElements = document.getElementsByName('edit');
+    for(let i=0; i < editElements.length; i++) {
+        const button = editElements[i];
+        button.addEventListener('click', e => {
+            console.log('edit button'+button.id);
+        });
+    }
+
+    // Handle delete
+    const deleteElements = document.getElementsByName('delete');
+    for(let i=0; i < deleteElements.length; i++) {
+        const button = deleteElements[i];
+        button.addEventListener('click', e => {
+            console.log('delete button'+button.id);
+        });
+    }
+
+    // Handle add
+    const addButton = document.getElementById('add');
+    addButton.addEventListener('click', e => {
+        console.log('add button');
+    });
+</script>
+</html>
