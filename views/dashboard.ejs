@@ -6,22 +6,64 @@
 <h1>Пользователи</h1>
 <ul>
     <% users.forEach(function(user) { %>
-    <li>
-        <%= user.name %> - <%= user.age %> лет
+    <li id='row<%= user.id %>'>
+        id<%= user.id %>: <%= user.name %>, <%= user.age %> лет
         <button name='edit' id='<%= user.id %>'>Редактировать</button>
         <button name='delete' id='<%= user.id %>'>Удалить</button>
+        <div id='row<%=user.id %>-edit' hidden>
+            <input placeholder='Имя' id='input-name-<%= user.id %>'/>
+            <input placeholder='Возраст' id='input-age-<%= user.id %>'/>
+            <button name='cancel-edit' id='<%= user.id %>'>Отмена</button>
+            <button name='confirm-edit' id='<%= user.id %>'>Ок</button>
+        </div>
     </li>
     <% }); %>
 </ul>
-<button id='add'>Добавить</button>
+<div id='new_user'>
+    <input required placeholder='Имя' id='input-newuser_name' />
+    <input required placeholder='Возраст' id='input-newuser_age' />
+    <button name='add_user' id='add'>Добавить</button>
+</div>
+
 </body>
 <script>
     // Handle edit
     const editElements = document.getElementsByName('edit');
     for(let i=0; i < editElements.length; i++) {
         const button = editElements[i];
+        button.addEventListener('click', e =>
+            document.getElementById('row'+button.id+'-edit').removeAttribute('hidden')
+        );
+    }
+
+    // Handle cancel edit
+    const cancelEditElements = document.getElementsByName('cancel-edit');
+    for(let i=0; i < cancelEditElements.length; i++) {
+        const button = cancelEditElements[i];
+        button.addEventListener('click', e =>
+            document.getElementById('row'+button.id+'-edit').setAttribute('hidden', '')
+           );
+    }
+
+    // Handle confirm edit
+    const confirmEditElements = document.getElementsByName('confirm-edit');
+    for(let i=0; i < confirmEditElements.length; i++) {
+        const button = confirmEditElements[i];
         button.addEventListener('click', e => {
-            console.log('edit button'+button.id);
+            const name = document.getElementById('input-name-'+button.id).value;
+            const age = document.getElementById('input-age-'+button.id).value;
+            fetch('/edit_user?id='+button.id+'&name='+name+'&age='+age, {method: 'GET'})
+                .then(function(response) {
+                    if(response.ok) {
+                        console.log('Edit was success');
+                        location.reload();
+                        return;
+                    }
+                    throw new Error('Request failed.');
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
         });
     }
 
@@ -30,14 +72,39 @@
     for(let i=0; i < deleteElements.length; i++) {
         const button = deleteElements[i];
         button.addEventListener('click', e => {
-            console.log('delete button'+button.id);
+            fetch('/delete_user?id='+button.id, {method: 'GET'})
+                .then(function(response) {
+                    if(response.ok) {
+                        console.log('Click was recorded');
+                        const row = document.getElementById('row'+button.id);
+                        row.remove();
+                        return;
+                    }
+                    throw new Error('Request failed.');
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
         });
     }
 
     // Handle add
     const addButton = document.getElementById('add');
     addButton.addEventListener('click', e => {
-        console.log('add button');
+      const name = document.getElementById('input-newuser_name').value;
+      const age = document.getElementById('input-newuser_age').value;
+      fetch('/add_user?name='+name+'&age='+age, {method: 'GET'})
+          .then(function(response) {
+              if(response.ok) {
+                  console.log('Add was success');
+                  location.reload();
+                  return;
+              }
+              throw new Error('Request failed.');
+          })
+          .catch(function(error) {
+              console.log(error);
+          });
     });
 </script>
 </html>

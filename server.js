@@ -26,7 +26,9 @@ let users = [{
 app.set('view engine', 'ejs');
 
 app.get('/', function(req, res) {
-    res.render('dashboard.ejs', { users: users });
+  res.render('dashboard.ejs', {
+    users: users
+  });
 });
 
 app.get('/get_user', function(req, res) {
@@ -47,21 +49,18 @@ app.get('/get_all', function(req, res) {
 
 app.get('/add_user', function(req, res) {
   try {
-    for (let i = 0; i < users.length; i++) {
-      if (req.query.id == users[i].id) {
-        throw 'User with this id already exists'
-      };
+    if (isNaN(req.query.age)) {
+      throw 'Age is not valid'
     };
-
     users[users.length] = {
-      id: req.query.id,
+      id: users[users.length - 1].id + 1,
       name: req.query.name,
       age: req.query.age
-    };
+    }
     res.send(users);
   } catch (e) {
-    res.statusCode = 400;
-    res.end("User with this id already exists");
+    res.statusCode = 415;
+    res.end("Age is not valid");
   }
 });
 
